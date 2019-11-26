@@ -326,7 +326,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
      */
     function proposeMetablock(
         bytes32 _kernelHash,
-        bytes32 _originObservation,
+        bytes32 _originObservation, // blockHash of ethereum block
         uint256 _dynasty,
         uint256 _accumulatedGas,
         bytes32 _committeeLock,
