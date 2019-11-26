@@ -187,7 +187,7 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
         external
     {
         // TODO: create domain separator
-        
+
         // This function must be called only once.
         require(
             address(axiom) == address(0),
@@ -255,7 +255,7 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
             _proposal != bytes32(0),
             "Proposal must not be null."
         );
-        // TODO: we can additional 
+        // TODO: we can additional
         Precommit storage precommit = precommits[msg.sender];
         require(
             precommit.proposal == bytes32(0),
@@ -263,6 +263,8 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
         );
         precommit.proposal = _proposal;
         precommit.committeeFormationBlockHeight = block.number.add(uint256(COMMITTEE_FORMATION_DELAY));
+
+        // todo when committee is deployed? why form committe separate transacton?
     }
 
     /**
@@ -530,10 +532,10 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
      * @param _withdrawalAddress A withdrawal address of newly joined validator.
      */
 
-    function joinDuringCreation(
-        bytes20 _chainId,
-        address _core,
-        address _withdrawalAddress
+    function joinDuringCreation( // Step 3  (called by validator)
+        bytes20 _chainId,  // bytes20(anchor)
+        address _core,  // Possibly event from newMetaChain
+        address _withdrawalAddress // New key
     )
         external
     {
@@ -541,6 +543,8 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
         validateJoinParams(_chainId, _core, _withdrawalAddress);
 
         // Specified core must have creation status.
+
+        // todo can be removed
         require(
             isCore(_core),
             "Core must be in an active state."
@@ -636,6 +640,7 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
             _rootBlockHeight
         );
 
+        // todo evaluate or emit chainId, core, anchor
         assignments[chainId] = core;
         anchors[chainId] = _anchor;
     }

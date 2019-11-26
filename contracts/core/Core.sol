@@ -324,16 +324,16 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
      * Propose transition object and vote message from seal
      * for the open kernel.
      */
-    function proposeMetablock(
-        bytes32 _kernelHash,
-        bytes32 _originObservation,
-        uint256 _dynasty,
-        uint256 _accumulatedGas,
-        bytes32 _committeeLock,
-        bytes32 _source,
-        bytes32 _target,
-        uint256 _sourceBlockHeight,
-        uint256 _targetBlockHeight
+    function proposeMetablock(  // Step 4
+        bytes32 _kernelHash, //todo do we need?
+        bytes32 _originObservation, // todo State root? answer -> Its a blockhash
+        uint256 _dynasty, // 1 - Meta block dynasty
+        uint256 _accumulatedGas, // more than current less than limit
+        bytes32 _committeeLock, // For test it would be hashlock and keep the secret.
+        bytes32 _source, // Blockhash (1405, 50th block)
+        bytes32 _target,  // Blockhash( 1405, 150th block)
+        uint256 _sourceBlockHeight, // 50 for now, more than 10 for test.
+        uint256 _targetBlockHeight // 150 (source + epochLength)
     )
         external
         whileMetablockOpen
@@ -380,7 +380,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
         insertProposal(_dynasty, proposal_);
     }
 
-    function registerVote(
+    function registerVote( // Step 5
         bytes32 _proposal,
         bytes32 _r,
         bytes32 _s,
@@ -555,6 +555,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
         onlyConsensus
         duringCreation
     {
+        // todo Check that it can only be called for meta-block 0.
         // during creation join at creation kernel height
         insertValidator(_validator, creationKernelHeight);
 
@@ -563,6 +564,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
         // TASK: reputation can be uint64, and initial rep set properly
         creationKernel.updatedReputation.push(uint256(1));
         if (countValidators >= minimumValidatorCount) {
+            // todo do we need event to share quorum has reached.
             quorum = calculateQuorum(countValidators);
             precommitClosureBlockHeight = CORE_OPEN_VOTES_WINDOW;
             openKernelHeight = creationKernelHeight;
@@ -574,6 +576,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
                 creationKernel.gasTarget
             );
             coreStatus = CoreStatus.opened;
+            // todo deploy kernel gateway (think about declare message)
         }
     }
 
@@ -652,7 +655,7 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
 
     /**
      * precommit to a given proposal and lock core validators
-     * to associated responsability
+     * to associated responsibility
      */
     function registerPrecommit(bytes32 _proposal)
         internal
@@ -707,6 +710,8 @@ contract Core is MasterCopyNonUpgradable, ConsensusModule, MosaicVersion, CoreSt
 
         proposals[openKernelHeight][_proposal] = proposals[openKernelHeight][SENTINEL_PROPOSALS];
         proposals[openKernelHeight][SENTINEL_PROPOSALS] = _proposal;
+
+        // todo should it emit _proposal?
     }
 
     /**

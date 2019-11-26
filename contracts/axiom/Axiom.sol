@@ -94,11 +94,11 @@ contract Axiom is AxiomI, ProxyFactory, ConsensusModule {
      * @param _reputationMasterCopy Reputation master copy contract address.
      */
     constructor(
-        address _techGov,
-        address _consensusMasterCopy,
-        address _coreMasterCopy,
-        address _committeeMasterCopy,
-        address _reputationMasterCopy
+        address _techGov, // External Account
+        address _consensusMasterCopy, // Master copy address
+        address _coreMasterCopy, // Master copy address
+        address _committeeMasterCopy, // Master copy address
+        address _reputationMasterCopy // Master copy address
     )
         public
     {
@@ -157,19 +157,19 @@ contract Axiom is AxiomI, ProxyFactory, ConsensusModule {
      * @param _withdrawalCooldownPeriodInBlocks Cooling period for withdrawal
      *                                          after logout.
      */
-    function setupConsensus(
-        uint256 _committeeSize,
-        uint256 _minValidators,
-        uint256 _joinLimit,
-        uint256 _gasTargetDelta,
-        uint256 _coinbaseSplitPerMille,
-        address _mOST,
-        uint256 _stakeMOSTAmount,
-        address _wETH,
-        uint256 _stakeWETHAmount,
-        uint256 _cashableEarningsPerMille,
-        uint256 _initialReputation,
-        uint256 _withdrawalCooldownPeriodInBlocks
+    function setupConsensus(  //Step 1
+        uint256 _committeeSize, //3
+        uint256 _minValidators, //5
+        uint256 _joinLimit, //10
+        uint256 _gasTargetDelta, // some number e.g. 15 million
+        uint256 _coinbaseSplitPerMille, // max 499
+        address _mOST, // New contract extends ERC20. // For testing deployer will get funds
+        uint256 _stakeMOSTAmount, // Random value 1000 OST
+        address _wETH, // Address of ERC20. Mock Token for test.
+        uint256 _stakeWETHAmount, // Random value 500 WETH
+        uint256 _cashableEarningsPerMille, // Random e.g. 100 (10%)
+        uint256 _initialReputation,   // (Random  Non zero 20)
+        uint256 _withdrawalCooldownPeriodInBlocks // 20 blocks
     )
         external
         onlyTechGov
@@ -259,9 +259,9 @@ contract Axiom is AxiomI, ProxyFactory, ConsensusModule {
      *                       circular buffer.
      * @param _rootRlpBlockHeader RLP encoded block header of root block.
      */
-    function newMetaChain(
-        uint256 _maxStateRoots,
-        bytes calldata _rootRlpBlockHeader
+    function newMetaChain(    // Step 2
+        uint256 _maxStateRoots, // Random +ve int e.g. 100
+        bytes calldata _rootRlpBlockHeader // Block header for e.g. 1405 block 10 header.
     )
         external
         onlyTechGov
