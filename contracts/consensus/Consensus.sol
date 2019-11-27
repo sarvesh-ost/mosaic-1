@@ -870,7 +870,7 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
         address committeeAddress = axiom.newCommittee(
             committeeSetupData
         );
-
+        // TODO emit event ?
         committee_ = CommitteeI(committeeAddress);
     }
 

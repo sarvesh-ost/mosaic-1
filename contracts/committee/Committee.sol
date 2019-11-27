@@ -273,6 +273,7 @@ contract Committee is MasterCopyNonUpgradable, ConsensusModule, CommitteeI {
         proposal = _proposal;
 
         // @qn (pro): In case of 7 quorum should be 4 or 5.
+        // TODO safemath handling
         quorum = _committeeSize * COMMITTEE_SUPER_MAJORITY_NUMERATOR /
         COMMITTEE_SUPER_MAJORITY_DENOMINATOR;
     }
@@ -385,9 +386,9 @@ contract Committee is MasterCopyNonUpgradable, ConsensusModule, CommitteeI {
             memberCount == committeeSize,
             "To close committee member count must equal committee size."
         );
-
+        // TODO update with require
         assert(activationBlockHeight == uint256(0));
-
+        // TODO update with require
         assert(memberInitiatedCooldown == address(0));
 
         memberInitiatedCooldown = msg.sender;
@@ -457,7 +458,7 @@ contract Committee is MasterCopyNonUpgradable, ConsensusModule, CommitteeI {
             block.number > activationBlockHeight,
             "Committee formation must have cooled down before activation."
         );
-
+        // TODO update with require also
         assert(commitTimeOutBlockHeight == 0);
 
         committeeStatus = CommitteeStatus.CommitPhase;
@@ -568,6 +569,7 @@ contract Committee is MasterCopyNonUpgradable, ConsensusModule, CommitteeI {
         if (positionCounts[_position] >= quorum) {
             // Sanity check, there should not be more than one position
             // that can achieve quorum.
+            // TODO require
             assert(
                 committeeDecision == bytes32(0) ||
                 committeeDecision == _position
