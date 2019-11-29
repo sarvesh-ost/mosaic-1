@@ -189,4 +189,6 @@ export enum ValidatorStatus {
   Withdrawn = 4,
 }
 
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 
