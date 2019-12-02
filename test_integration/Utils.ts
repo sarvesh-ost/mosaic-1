@@ -14,7 +14,9 @@
 
 'use strict';
 
-import shared from "./shared";
+import Web3 from "web3";
+
+const EthUtils = require('ethereumjs-util');
 
 export default class Utils {
   /**
@@ -58,13 +60,48 @@ export default class Utils {
    * @param address Contract address
    * @return {Promise<string>}
    */
-  static getCode(web3, address): Promise<string> {
+  static getCode(web3: Web3, address: string): Promise<string> {
     return web3.eth.getCode(address);
   }
 
-  static randomSha3(): string {
+  /**
+   * Returns random sha3 value
+   * @param web3 Web3 provider
+   * @return Sha3 value
+   */
+  static randomSha3(web3: Web3): string {
     const randomString = Math.random().toString(36).substring(2, 15);
-    return shared.origin.web3.utils.sha3(randomString);
+    return web3.utils.sha3(randomString);
+  }
+
+  /**
+   * Returns signatures
+   * @param web3 Web3 provider
+   * @param proposalHash proposal value
+   * @param privateKey Private key
+   * @return r, s, v signature values
+   */
+  static signProposal(web3: Web3, proposalHash: string, privateKey: string):
+    {r: string, s: string, v: number} {
+    const proposalSignature = EthUtils.ecsign(
+      EthUtils.toBuffer(proposalHash),
+      EthUtils.toBuffer(privateKey),
+    );
+
+    return {
+      r: EthUtils.bufferToHex(proposalSignature.r),
+      s: EthUtils.bufferToHex(proposalSignature.s),
+      v: web3.utils.toDecimal(proposalSignature.v),
+    };
+  }
+
+  /**
+   * Returns true if address is valid.
+   * @param address Ethereum address
+   * @return True if address is valid.
+   */
+  static isAddress(web3: Web3, address: string): boolean {
+    return web3.utils.isAddress(address)
   }
 
   static getFormattedEvents(eventsData): object {
@@ -179,6 +216,41 @@ export default class Utils {
     return Utils.getFormattedEvents(decodedEvents);
   }
 
+  /**
+   * Advance block using evm_mine method
+   * @param web3 Web3 provider
+   */
+  private static async advanceBlock(web3: any) {
+    return new Promise((resolve, reject) => {
+      web3.currentProvider.send({
+          method: 'evm_mine',
+          jsonrpc: '2.0',
+          id: 1337,
+        },
+        (err) => {
+          if (err) {
+            return reject(err);
+          }
+
+          const newBlockHash = web3.eth.getBlock('latest').hash;
+
+          return resolve(newBlockHash);
+        });
+    });
+  }
+
+  /**
+   * Advance block by input block length
+   * @param web3 Web3 provider
+   * @param blockLength Block length to advance
+   */
+  static async advanceBlocks(web3: Web3, blockLength): Promise<void> {
+    for (let i = 0; i < blockLength; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await Utils.advanceBlock(web3);
+    }
+  }
+
 }
 
 export enum ValidatorStatus {
@@ -187,6 +259,15 @@ export enum ValidatorStatus {
   Staked = 2,
   LoggedOut = 3,
   Withdrawn = 4,
+}
+
+export enum CoreStatus {
+  undefined = 0,
+  halted = 1,
+  corrupted = 2,
+  creation = 3,
+  opened = 4,
+  precommitted = 5,
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
