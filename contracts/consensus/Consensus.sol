@@ -373,7 +373,7 @@ contract Consensus is MasterCopyNonUpgradable, CoreStatusEnum, ConsensusI {
      *          - provided kernel hash should be equal to open kernel hash.
      *
      * @param _chainId Chain id.
-     * @param _rlpBlockHeader RLP ecoded block header.
+     * @param _rlpBlockHeader RLP encoded block header.
      * @param _kernelHash Kernel hash
      * @param _originObservation Observation of the origin chain.
      * @param _dynasty The dynasty number where the meta-block closes

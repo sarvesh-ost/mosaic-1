@@ -69,6 +69,10 @@ export class Validator {
   address: string;
   privateKey: string;
   withdrawalAddress: string;
+  // Position of committee member.
+  position?: string;
+  // Salt used to create sealed commit.
+  salt?: string;
 
 
   constructor(address: string, privateKey: string, withdrawalAddress: string) {
