@@ -22,7 +22,7 @@ import Utils, {NULL_ADDRESS} from "../Utils";
 
 describe('Committee::cooldownCommittee', async () => {
 
-  it('should cool down Committee', function () {
+  it('should cool down Committee',  async () => {
 
     const validators = shared.origin.keys.validators;
     const committee = shared.origin.contracts.Committee.instance;
@@ -40,11 +40,12 @@ describe('Committee::cooldownCommittee', async () => {
       member !== undefined,
       'Atleast one member should be added to committee',
     );
-    
+
     await Utils.sendTransaction(
       committee.methods.cooldownCommittee(),
       {from: member},
     );
 
   });
+});
 
